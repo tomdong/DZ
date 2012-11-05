@@ -4,14 +4,12 @@ import java.util.ArrayList;
 
 import com.intalker.dz.R;
 import com.intalker.dz.utilities.ChessManager;
-import com.intalker.dz.utilities.DensityAdaptor;
 import com.intalker.dz.utilities.PositionManager;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
@@ -67,7 +65,6 @@ public class ChessBoard extends RelativeLayout {
 			Chess btn = new Chess(this.getContext(), R.drawable.chess_b_normal,
 					R.drawable.chess_b_selected);
 			this.addView(btn);
-			//positionItem(btn, 3, i);
 			btn.setPos(3, i);
 			mALiveChessList.add(btn);
 			ChessManager.getInstance().addToBList(btn);
@@ -77,11 +74,9 @@ public class ChessBoard extends RelativeLayout {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				// TODO Auto-generated method stub
 				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
 					int ix = PositionManager.getInstance().getProperRowColIndex(event.getX(), event.getY());
-					//Toast.makeText(v.getContext(), String.valueOf(ix), Toast.LENGTH_SHORT).show();
 					Chess lastChess = ChessManager.getInstance().getLastSelectedChess();
 					if(null != lastChess)
 					{
@@ -99,26 +94,6 @@ public class ChessBoard extends RelativeLayout {
 			}
 			
 		});
-	}
-
-//	private void positionItem(View item, int r, int c) {
-//		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-//				RelativeLayout.LayoutParams.WRAP_CONTENT,
-//				RelativeLayout.LayoutParams.WRAP_CONTENT);
-//		PointF pos = PositionManager.getInstance().getLocation(r, c);
-//		int itemWidth = DensityAdaptor.getDensityIndependentValue(48);
-//		int left = (int) (pos.x - (itemWidth / 2));
-//		int top = (int) (pos.y - (itemWidth / 2));
-//		int right = mBoardWidth - left + itemWidth;
-//		int bottom = mBoardHeight - top + itemWidth;
-//		lp.setMargins(left, top, right, bottom);
-//		item.setLayoutParams(lp);
-//	}
-	
-	//private double distance
-	private boolean isValidPosition(int x, int y)
-	{
-		return false;
 	}
 
 	@Override

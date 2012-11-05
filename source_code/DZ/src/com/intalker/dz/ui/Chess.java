@@ -36,7 +36,6 @@ public class Chess extends ImageButton {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				// TODO Auto-generated method stub
 				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
 					Chess chess = (Chess)v;

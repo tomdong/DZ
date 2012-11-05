@@ -10,7 +10,7 @@ public class PositionManager {
 	private float[] mDrawPts = new float[32];
 	private int mBoardWidth = 0;
 	private int mBoardHeight = 0;
-	private final int mTouchTolerance = DensityAdaptor.getDensityIndependentValue(20);
+	private final int mTouchTolerance = DensityAdaptor.getDensityIndependentValue(48);
 	private final int mItemWidth = DensityAdaptor.getDensityIndependentValue(48);
 	private static PositionManager instance = null;
 	
