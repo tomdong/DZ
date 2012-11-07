@@ -22,8 +22,6 @@ public class ChessBoard extends RelativeLayout {
 
 	private Paint mForegroundPaint = null;
 	private Rect mBoardBound = null;
-	
-	private ArrayList<Chess> mALiveChessList = new ArrayList<Chess>();
 
 	public ChessBoard(Context context, int w, int h) {
 		super(context);
@@ -50,15 +48,17 @@ public class ChessBoard extends RelativeLayout {
 
 	private void initializeUI() {
 		this.setBackgroundResource(R.drawable.grid_bg);
+		
+		ChessManager chessMgr = ChessManager.getInstance();
+		chessMgr.clearAList();
+		chessMgr.clearBList();
 
 		for (int i = 0; i < 4; ++i) {
 			Chess btn = new Chess(this.getContext(), R.drawable.chess_a_normal,
 					R.drawable.chess_a_selected);
 			this.addView(btn);
-			//positionItem(btn, 0, i);
 			btn.setPos(0, i);
-			mALiveChessList.add(btn);
-			ChessManager.getInstance().addToAList(btn);
+			chessMgr.addToAList(btn);
 		}
 
 		for (int i = 0; i < 4; ++i) {
@@ -66,8 +66,7 @@ public class ChessBoard extends RelativeLayout {
 					R.drawable.chess_b_selected);
 			this.addView(btn);
 			btn.setPos(3, i);
-			mALiveChessList.add(btn);
-			ChessManager.getInstance().addToBList(btn);
+			chessMgr.addToBList(btn);
 		}
 		
 		this.setOnTouchListener(new OnTouchListener(){
@@ -76,16 +75,18 @@ public class ChessBoard extends RelativeLayout {
 			public boolean onTouch(View v, MotionEvent event) {
 				if(event.getAction() == MotionEvent.ACTION_DOWN)
 				{
-					int ix = PositionManager.getInstance().getProperRowColIndex(event.getX(), event.getY());
-					Chess lastChess = ChessManager.getInstance().getLastSelectedChess();
+					ChessManager chessMgr = ChessManager.getInstance();
+					PositionManager posMgr = PositionManager.getInstance();
+					int ix = posMgr.getProperRowColIndex(event.getX(), event.getY());
+					Chess lastChess = chessMgr.getLastSelectedChess();
 					if(null != lastChess)
 					{
 						if (ix >= 0)
 						{
-							if(!ChessManager.getInstance().isOccupied(ix) && ChessManager.getInstance().canMoveTo(lastChess, ix))
+							if(!chessMgr.isOccupied(ix) && chessMgr.canMoveTo(lastChess, ix))
 							{
 								lastChess.setIndex(ix);
-								ChessManager.getInstance().clearLastSelected();
+								chessMgr.clearLastSelected();
 							}
 						}
 					}

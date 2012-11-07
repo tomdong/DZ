@@ -20,6 +20,16 @@ public class ChessManager {
 		return instance;
 	}
 	
+	public void clearAList()
+	{
+		mAliveChessAList.clear();
+	}
+	
+	public void clearBList()
+	{
+		mAliveChessBList.clear();
+	}
+	
 	public void addToAList(Chess item)
 	{
 		if(!mAliveChessAList.contains(item))
