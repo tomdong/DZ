@@ -14,6 +14,7 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 public class ChessBoard extends RelativeLayout {
 
@@ -55,7 +56,7 @@ public class ChessBoard extends RelativeLayout {
 
 		for (int i = 0; i < 4; ++i) {
 			Chess btn = new Chess(this.getContext(), R.drawable.chess_a_normal,
-					R.drawable.chess_a_selected);
+					R.drawable.chess_a_selected, Chess.Role_A);
 			this.addView(btn);
 			btn.setPos(0, i);
 			chessMgr.addToAList(btn);
@@ -63,7 +64,7 @@ public class ChessBoard extends RelativeLayout {
 
 		for (int i = 0; i < 4; ++i) {
 			Chess btn = new Chess(this.getContext(), R.drawable.chess_b_normal,
-					R.drawable.chess_b_selected);
+					R.drawable.chess_b_selected, Chess.Role_B);
 			this.addView(btn);
 			btn.setPos(3, i);
 			chessMgr.addToBList(btn);
@@ -83,10 +84,16 @@ public class ChessBoard extends RelativeLayout {
 					{
 						if (ix >= 0)
 						{
-							if(!chessMgr.isOccupied(ix) && chessMgr.canMoveTo(lastChess, ix))
+							if(!chessMgr.isOccupiedBy(ix) && chessMgr.canMoveTo(lastChess, ix))
 							{
 								lastChess.setIndex(ix);
 								chessMgr.clearLastSelected();
+								//chessMgr.setNewlyMovedChess(lastChess);
+								boolean result = chessMgr.checkStatus(lastChess);
+								if(result)
+								{
+									Toast.makeText(v.getContext(), "Kill", Toast.LENGTH_SHORT).show();
+								}
 							}
 						}
 					}

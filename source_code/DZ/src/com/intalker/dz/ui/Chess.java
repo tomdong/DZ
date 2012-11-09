@@ -11,15 +11,19 @@ import android.widget.ImageButton;
 
 public class Chess extends ImageButton {
 
+	public final static int Role_A = 0;
+	public final static int Role_B = 1;
 	private int normalImageResId = -1;
 	private int selectedImageResId = -1;
 	private int curRow = 0;
 	private int curCol = 0;
+	private int role = -1;
 	
-	public Chess(Context context, int normalResId, int selectedResId) {
+	public Chess(Context context, int normalResId, int selectedResId, int role) {
 		super(context);
 		normalImageResId = normalResId;
 		selectedImageResId = selectedResId;
+		this.role = role;
 		
 		this.setBackgroundResource(normalImageResId);
 		
@@ -96,5 +100,15 @@ public class Chess extends ImageButton {
 	public void unSelect()
 	{
 		this.setBackgroundResource(normalImageResId);
+	}
+	
+	public boolean isComrade(Chess other)
+	{
+		return this.role == other.role;
+	}
+	
+	public int getRole()
+	{
+		return role;
 	}
 }

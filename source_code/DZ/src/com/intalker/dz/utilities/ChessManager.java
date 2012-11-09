@@ -8,6 +8,7 @@ public class ChessManager {
 	private ArrayList<Chess> mAliveChessAList = new ArrayList<Chess>();
 	private ArrayList<Chess> mAliveChessBList = new ArrayList<Chess>();
 	private Chess mLastSelectedChess = null;
+	private Chess mNewlyMovedChess = null;
 	
 	private static ChessManager instance = null;
 	
@@ -46,25 +47,22 @@ public class ChessManager {
 		}
 	}
 	
-	public boolean isOccupied(int index)
+	public boolean isOccupiedBy(ArrayList<Chess> chessList, int index)
 	{
-		for(int i = 0; i < mAliveChessAList.size(); ++i)
+		for(int i = 0; i < chessList.size(); ++i)
 		{
-			if(mAliveChessAList.get(i).getIndex() == index)
+			if(chessList.get(i).getIndex() == index)
 			{
 				return true;
 			}
 		}
-		
-		for(int i = 0; i < mAliveChessBList.size(); ++i)
-		{
-			if(mAliveChessBList.get(i).getIndex() == index)
-			{
-				return true;
-			}
-		}
-		
 		return false;
+	}
+	
+	public boolean isOccupiedBy(int index)
+	{
+		return isOccupiedBy(mAliveChessAList, index)
+				|| isOccupiedBy(mAliveChessBList, index);
 	}
 	
 	public void selectChess(Chess item)
@@ -97,6 +95,157 @@ public class ChessManager {
 			return true;
 		}
 		return false;
+	}
+	
+	public void setNewlyMovedChess(Chess chess)
+	{
+		mNewlyMovedChess = chess;
+	}
+	
+//	public void checkResult()
+//	{
+//		if(null == mNewlyMovedChess)
+//		{
+//			return;
+//		}
+//		
+//		int r = mNewlyMovedChess.getRow();
+//		int c = mNewlyMovedChess.getCol();
+//		
+//		ArrayList<Chess> comrades = getComrades(mNewlyMovedChess);
+//		ArrayList<Chess> enimies = getEnemies(mNewlyMovedChess);
+//		
+//		
+//	}
+	
+	public boolean checkStatus(Chess newlyMovedChess)
+	{
+		return checkRow(newlyMovedChess);
+	}
+	
+	private boolean checkRow(Chess chess)
+	{
+		ArrayList<Chess> comradesInSameRow = new ArrayList<Chess>();
+		int r = chess.getRow();
+		ArrayList<Chess> comrades = getComrades(chess);
+		for (Chess c : comrades)
+		{
+			if(c.getRow() == r)
+			{
+				comradesInSameRow.add(c);
+			}
+		}
+		//TODO: contains itself, should be optimized
+		if(comradesInSameRow.size() != 2)
+		{
+			return false;
+		}
+		ArrayList<Chess> enimies = getEnemies(chess);
+		Chess comrade = comradesInSameRow.get(0);
+		int c1 = chess.getCol();
+		int c2 = comrade.getCol();
+		if(Math.abs(c1 - c2) != 1)
+		{
+			return false;
+		}
+		
+		int rowStartIndex = r * 4;
+		//TODO: should be optimized
+		if(isOccupiedBy(rowStartIndex)
+				&& isOccupiedBy(rowStartIndex + 1)
+				&& isOccupiedBy(rowStartIndex + 2)
+				&& isOccupiedBy(rowStartIndex + 3))
+		{
+			return false;
+		}
+		//TODO: end
+		
+		switch(c1)
+		{
+		case 0:
+			if(isOccupiedBy(enimies, rowStartIndex + 2))
+			{
+				return true;
+			}
+			break;
+		case 1:
+			if(0 == c2)
+			{
+				if(isOccupiedBy(enimies, rowStartIndex + 2))
+				{
+					return true;
+				}
+			}
+			else if(2 == c2)
+			{
+				if(isOccupiedBy(enimies, rowStartIndex))
+				{
+					return true;
+				}
+				else if(isOccupiedBy(enimies, rowStartIndex + 3))
+				{
+					return true;
+				}
+			}
+			break;
+		case 2:
+			if(3 == c2)
+			{
+				if(isOccupiedBy(enimies, rowStartIndex + 1))
+				{
+					return true;
+				}
+			}
+			if(1 == c2)
+			{
+				if(isOccupiedBy(enimies, rowStartIndex))
+				{
+					return true;
+				}
+				else if(isOccupiedBy(enimies, rowStartIndex + 3))
+				{
+					return true;
+				}
+			}
+			break;
+		case 3:
+			if(isOccupiedBy(enimies, rowStartIndex + 1))
+			{
+				return true;
+			}
+			break;
+		default:
+			break;
+		}
+		return false;
+	}
+	
+	private ArrayList<Chess> getComrades(Chess chess)
+	{
+		switch(chess.getRole())
+		{
+		case Chess.Role_A:
+			return mAliveChessAList;
+		case Chess.Role_B:
+			return mAliveChessBList;
+		default:
+			break;
+		}
+		return null;
+	}
+	
+	private ArrayList<Chess> getEnemies(Chess chess)
+	{
+		switch(chess.getRole())
+		{
+		case Chess.Role_A:
+			return mAliveChessBList;
+		case Chess.Role_B:
+			return mAliveChessAList;
+		default:
+			break;
+		}
+		return null;
 	}
 	
 	public ChessManager()
