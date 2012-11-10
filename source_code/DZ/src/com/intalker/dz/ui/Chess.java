@@ -18,97 +18,89 @@ public class Chess extends ImageButton {
 	private int curRow = 0;
 	private int curCol = 0;
 	private int role = -1;
-	
+
 	public Chess(Context context, int normalResId, int selectedResId, int role) {
 		super(context);
 		normalImageResId = normalResId;
 		selectedImageResId = selectedResId;
 		this.role = role;
-		
+
 		this.setBackgroundResource(normalImageResId);
-		
-		this.setOnClickListener(new OnClickListener(){
+
+		this.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 
 			}
-			
+
 		});
-		
-		this.setOnTouchListener(new OnTouchListener(){
+
+		this.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if(event.getAction() == MotionEvent.ACTION_DOWN)
-				{
-					Chess chess = (Chess)v;
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					Chess chess = (Chess) v;
 					chess.select();
 				}
 				return false;
 			}
-			
+
 		});
 	}
-	
-	public void setPos(int r, int c)
-	{
+
+	public void setPos(int r, int c) {
 		curRow = r;
 		curCol = c;
 		updatePos();
 	}
-	
-	public void setIndex(int index)
-	{
+
+	public void setIndex(int index) {
 		curRow = index / 4;
 		curCol = index % 4;
 		updatePos();
 	}
-	
-	private void updatePos()
-	{
+
+	private void updatePos() {
 		PositionManager.getInstance().positionItem(this, curRow, curCol);
 		unSelect();
 	}
-	
-	public int getRow()
-	{
+
+	public int getRow() {
 		return curRow;
 	}
-	
-	public int getCol()
-	{
+
+	public int getCol() {
 		return curCol;
 	}
-	
-	public int getIndex()
-	{
+
+	public int getIndex() {
 		return curRow * 4 + curCol;
 	}
-	
-	public PointF getPosition()
-	{
+
+	public PointF getPosition() {
 		return PositionManager.getInstance().getLocation(curRow, curCol);
 	}
-	
-	public void select()
-	{
+
+	public void select() {
 		ChessManager.getInstance().selectChess(this);
 		this.setBackgroundResource(selectedImageResId);
 	}
-	
-	public void unSelect()
-	{
+
+	public void unSelect() {
 		this.setBackgroundResource(normalImageResId);
 	}
-	
-	public boolean isComrade(Chess other)
-	{
+
+	public boolean isComrade(Chess other) {
 		return this.role == other.role;
 	}
-	
-	public int getRole()
-	{
+
+	public int getRole() {
 		return role;
+	}
+
+	public void die() {
+		this.setVisibility(GONE);
 	}
 }

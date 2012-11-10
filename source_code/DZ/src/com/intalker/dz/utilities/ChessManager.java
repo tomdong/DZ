@@ -8,319 +8,277 @@ public class ChessManager {
 	private ArrayList<Chess> mAliveChessAList = new ArrayList<Chess>();
 	private ArrayList<Chess> mAliveChessBList = new ArrayList<Chess>();
 	private Chess mLastSelectedChess = null;
-	private Chess mNewlyMovedChess = null;
-	
+
 	private static ChessManager instance = null;
-	
-	public static ChessManager getInstance()
-	{
-		if(null == instance)
-		{
+
+	public static ChessManager getInstance() {
+		if (null == instance) {
 			instance = new ChessManager();
 		}
 		return instance;
 	}
-	
-	public void clearAList()
-	{
+
+	public void clearAList() {
 		mAliveChessAList.clear();
 	}
-	
-	public void clearBList()
-	{
+
+	public void clearBList() {
 		mAliveChessBList.clear();
 	}
-	
-	public void addToAList(Chess item)
-	{
-		if(!mAliveChessAList.contains(item))
-		{
+
+	public void addToAList(Chess item) {
+		if (!mAliveChessAList.contains(item)) {
 			mAliveChessAList.add(item);
 		}
 	}
-	
-	public void addToBList(Chess item)
-	{
-		if(!mAliveChessBList.contains(item))
-		{
+
+	public void addToBList(Chess item) {
+		if (!mAliveChessBList.contains(item)) {
 			mAliveChessBList.add(item);
 		}
 	}
-	
-	public boolean isOccupiedBy(ArrayList<Chess> chessList, int index)
-	{
-		for(int i = 0; i < chessList.size(); ++i)
-		{
-			if(chessList.get(i).getIndex() == index)
-			{
-				return true;
+
+	public boolean isOccupiedBy(ArrayList<Chess> chessList, int index) {
+		return getItemByPos(chessList, index) != null;
+	}
+
+	public Chess getItemByPos(ArrayList<Chess> chessList, int index) {
+		for (int i = 0; i < chessList.size(); ++i) {
+			Chess c = chessList.get(i);
+			if (c.getIndex() == index) {
+				return c;
 			}
 		}
-		return false;
+		return null;
 	}
-	
-	public boolean isOccupiedBy(int index)
-	{
+
+	public boolean isOccupiedBy(int index) {
 		return isOccupiedBy(mAliveChessAList, index)
 				|| isOccupiedBy(mAliveChessBList, index);
 	}
-	
-	public void selectChess(Chess item)
-	{
-		if(null != mLastSelectedChess)
-		{
+
+	public void selectChess(Chess item) {
+		if (null != mLastSelectedChess) {
 			mLastSelectedChess.unSelect();
 		}
 		mLastSelectedChess = item;
 	}
-	
-	public Chess getLastSelectedChess()
-	{
+
+	public Chess getLastSelectedChess() {
 		return mLastSelectedChess;
 	}
-	
-	public void clearLastSelected()
-	{
+
+	public void clearLastSelected() {
 		mLastSelectedChess = null;
 	}
-	
-	public boolean canMoveTo(Chess item, int newIndex)
-	{
+
+	public boolean canMoveTo(Chess item, int newIndex) {
 		int newRow = newIndex / 4;
 		int newCol = newIndex % 4;
 		int oldRow = item.getRow();
 		int oldCol = item.getCol();
-		if (Math.abs(newRow - oldRow) + Math.abs(newCol - oldCol) == 1)
-		{
+		if (Math.abs(newRow - oldRow) + Math.abs(newCol - oldCol) == 1) {
 			return true;
 		}
 		return false;
 	}
-	
-	public void setNewlyMovedChess(Chess chess)
-	{
-		mNewlyMovedChess = chess;
+
+	public void removeItem(Chess chess) {
+		getComrades(chess).remove(chess);
+		chess.die();
 	}
-	
-//	public void checkResult()
-//	{
-//		if(null == mNewlyMovedChess)
-//		{
-//			return;
-//		}
-//		
-//		int r = mNewlyMovedChess.getRow();
-//		int c = mNewlyMovedChess.getCol();
-//		
-//		ArrayList<Chess> comrades = getComrades(mNewlyMovedChess);
-//		ArrayList<Chess> enimies = getEnemies(mNewlyMovedChess);
-//		
-//		
-//	}
-	
-	public boolean checkStatus(Chess newlyMovedChess)
-	{
-		return checkRow(newlyMovedChess) || checkCol(newlyMovedChess);
+
+	public ArrayList<Chess> getNewlyKilledEnemies(Chess newlyMovedChess) {
+		ArrayList<Chess> killedList = new ArrayList<Chess>();
+		Chess killedItemInRow = checkRow(newlyMovedChess);
+		Chess killedItemInCol = checkCol(newlyMovedChess);
+		if (null != killedItemInRow) {
+			killedList.add(killedItemInRow);
+		}
+		if (null != killedItemInCol) {
+			killedList.add(killedItemInCol);
+		}
+		return killedList;
 	}
-	
-	private boolean checkRow(Chess chess)
-	{
+
+	private Chess checkRow(Chess chess) {
 		ArrayList<Chess> comradesInSameRow = new ArrayList<Chess>();
 		int row = chess.getRow();
 		ArrayList<Chess> comrades = getComrades(chess);
-		for (Chess c : comrades)
-		{
-			if(c.getRow() == row && !c.equals(chess))
-			{
+		for (Chess c : comrades) {
+			if (c.getRow() == row && !c.equals(chess)) {
 				comradesInSameRow.add(c);
 			}
 		}
-		//TODO: contains itself, should be optimized
-		if(comradesInSameRow.size() != 1)
-		{
-			return false;
+		// TODO: contains itself, should be optimized
+		if (comradesInSameRow.size() != 1) {
+			return null;
 		}
 		ArrayList<Chess> enimies = getEnemies(chess);
 		Chess comrade = comradesInSameRow.get(0);
 		int c1 = chess.getCol();
 		int c2 = comrade.getCol();
-		if(Math.abs(c1 - c2) != 1)
-		{
-			return false;
+		if (Math.abs(c1 - c2) != 1) {
+			return null;
 		}
-		
+
 		int rowStartIndex = row * 4;
-		//TODO: should be optimized
-		if(isOccupiedBy(rowStartIndex)
-				&& isOccupiedBy(rowStartIndex + 1)
+		// TODO: should be optimized
+		if (isOccupiedBy(rowStartIndex) && isOccupiedBy(rowStartIndex + 1)
 				&& isOccupiedBy(rowStartIndex + 2)
-				&& isOccupiedBy(rowStartIndex + 3))
-		{
-			return false;
+				&& isOccupiedBy(rowStartIndex + 3)) {
+			return null;
 		}
-		//TODO: end
-		
-		switch(c1)
-		{
+		// TODO: end
+
+		Chess deadChess = null;
+
+		switch (c1) {
 		case 0:
-			if(isOccupiedBy(enimies, rowStartIndex + 2))
-			{
-				return true;
+			deadChess = getItemByPos(enimies, rowStartIndex + 2);
+			if (null != deadChess) {
+				return deadChess;
 			}
 			break;
 		case 1:
-			if(0 == c2)
-			{
-				if(isOccupiedBy(enimies, rowStartIndex + 2))
-				{
-					return true;
+			if (0 == c2) {
+				deadChess = getItemByPos(enimies, rowStartIndex + 2);
+				if (null != deadChess) {
+					return deadChess;
 				}
-			}
-			else if(2 == c2)
-			{
-				if(isOccupiedBy(enimies, rowStartIndex))
-				{
-					return true;
-				}
-				else if(isOccupiedBy(enimies, rowStartIndex + 3))
-				{
-					return true;
+			} else if (2 == c2) {
+				deadChess = getItemByPos(enimies, rowStartIndex);
+				if (null != deadChess) {
+					return deadChess;
+				} else {
+					deadChess = getItemByPos(enimies, rowStartIndex + 3);
+					if (null != deadChess) {
+						return deadChess;
+					}
 				}
 			}
 			break;
 		case 2:
-			if(3 == c2)
-			{
-				if(isOccupiedBy(enimies, rowStartIndex + 1))
-				{
-					return true;
+			if (3 == c2) {
+				deadChess = getItemByPos(enimies, rowStartIndex + 1);
+				if (null != deadChess) {
+					return deadChess;
 				}
 			}
-			if(1 == c2)
-			{
-				if(isOccupiedBy(enimies, rowStartIndex))
-				{
-					return true;
-				}
-				else if(isOccupiedBy(enimies, rowStartIndex + 3))
-				{
-					return true;
+			if (1 == c2) {
+				deadChess = getItemByPos(enimies, rowStartIndex);
+				if (null != deadChess) {
+					return deadChess;
+				} else {
+					deadChess = getItemByPos(enimies, rowStartIndex + 3);
+					if (null != deadChess) {
+						return deadChess;
+					}
 				}
 			}
 			break;
 		case 3:
-			if(isOccupiedBy(enimies, rowStartIndex + 1))
-			{
-				return true;
+			deadChess = getItemByPos(enimies, rowStartIndex + 1);
+			if (null != deadChess) {
+				return deadChess;
 			}
 			break;
 		default:
 			break;
 		}
-		return false;
+		return null;
 	}
-	
-	private boolean checkCol(Chess chess)
-	{
+
+	private Chess checkCol(Chess chess) {
 		ArrayList<Chess> comradesInSameCol = new ArrayList<Chess>();
 		int col = chess.getCol();
 		ArrayList<Chess> comrades = getComrades(chess);
-		for (Chess c : comrades)
-		{
-			if(c.getCol() == col && !c.equals(chess))
-			{
+		for (Chess c : comrades) {
+			if (c.getCol() == col && !c.equals(chess)) {
 				comradesInSameCol.add(c);
 			}
 		}
-		//TODO: contains itself, should be optimized
-		if(comradesInSameCol.size() != 1)
-		{
-			return false;
+		// TODO: contains itself, should be optimized
+		if (comradesInSameCol.size() != 1) {
+			return null;
 		}
 		ArrayList<Chess> enimies = getEnemies(chess);
 		Chess comrade = comradesInSameCol.get(0);
 		int r1 = chess.getRow();
 		int r2 = comrade.getRow();
-		if(Math.abs(r1 - r2) != 1)
-		{
-			return false;
+		if (Math.abs(r1 - r2) != 1) {
+			return null;
 		}
-		
+
 		int colStartIndex = col;
-		//TODO: should be optimized
-		if(isOccupiedBy(colStartIndex)
-				&& isOccupiedBy(colStartIndex + 4)
+		// TODO: should be optimized
+		if (isOccupiedBy(colStartIndex) && isOccupiedBy(colStartIndex + 4)
 				&& isOccupiedBy(colStartIndex + 8)
-				&& isOccupiedBy(colStartIndex + 12))
-		{
-			return false;
+				&& isOccupiedBy(colStartIndex + 12)) {
+			return null;
 		}
-		//TODO: end
-		
-		switch(r1)
-		{
+		// TODO: end
+
+		Chess deadChess = null;
+
+		switch (r1) {
 		case 0:
-			if(isOccupiedBy(enimies, colStartIndex + 8))
-			{
-				return true;
+			deadChess = getItemByPos(enimies, colStartIndex + 8);
+			if (null != deadChess) {
+				return deadChess;
 			}
 			break;
 		case 1:
-			if(0 == r2)
-			{
-				if(isOccupiedBy(enimies, colStartIndex + 8))
-				{
-					return true;
+			if (0 == r2) {
+				deadChess = getItemByPos(enimies, colStartIndex + 8);
+				if (null != deadChess) {
+					return deadChess;
 				}
-			}
-			else if(2 == r2)
-			{
-				if(isOccupiedBy(enimies, colStartIndex))
-				{
-					return true;
-				}
-				else if(isOccupiedBy(enimies, colStartIndex + 12))
-				{
-					return true;
+			} else if (2 == r2) {
+				deadChess = getItemByPos(enimies, colStartIndex);
+				if (null != deadChess) {
+					return deadChess;
+				} else {
+					deadChess = getItemByPos(enimies, colStartIndex + 12);
+					if (null != deadChess) {
+						return deadChess;
+					}
 				}
 			}
 			break;
 		case 2:
-			if(3 == r2)
-			{
-				if(isOccupiedBy(enimies, colStartIndex + 4))
-				{
-					return true;
+			if (3 == r2) {
+				deadChess = getItemByPos(enimies, colStartIndex + 4);
+				if (null != deadChess) {
+					return deadChess;
 				}
 			}
-			if(1 == r2)
-			{
-				if(isOccupiedBy(enimies, colStartIndex))
-				{
-					return true;
-				}
-				else if(isOccupiedBy(enimies, colStartIndex + 12))
-				{
-					return true;
+			if (1 == r2) {
+				deadChess = getItemByPos(enimies, colStartIndex);
+				if (null != deadChess) {
+					return deadChess;
+				} else {
+					deadChess = getItemByPos(enimies, colStartIndex + 12);
+					if (null != deadChess) {
+						return deadChess;
+					}
 				}
 			}
 			break;
 		case 3:
-			if(isOccupiedBy(enimies, colStartIndex + 4))
-			{
-				return true;
+			deadChess = getItemByPos(enimies, colStartIndex + 4);
+			if (null != deadChess) {
+				return deadChess;
 			}
 			break;
 		default:
 			break;
 		}
-		return false;
+		return null;
 	}
-	
-	private ArrayList<Chess> getComrades(Chess chess)
-	{
-		switch(chess.getRole())
-		{
+
+	private ArrayList<Chess> getComrades(Chess chess) {
+		switch (chess.getRole()) {
 		case Chess.Role_A:
 			return mAliveChessAList;
 		case Chess.Role_B:
@@ -330,11 +288,9 @@ public class ChessManager {
 		}
 		return null;
 	}
-	
-	private ArrayList<Chess> getEnemies(Chess chess)
-	{
-		switch(chess.getRole())
-		{
+
+	private ArrayList<Chess> getEnemies(Chess chess) {
+		switch (chess.getRole()) {
 		case Chess.Role_A:
 			return mAliveChessBList;
 		case Chess.Role_B:
@@ -344,8 +300,7 @@ public class ChessManager {
 		}
 		return null;
 	}
-	
-	public ChessManager()
-	{
+
+	public ChessManager() {
 	}
 }

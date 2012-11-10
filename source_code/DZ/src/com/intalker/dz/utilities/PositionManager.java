@@ -10,21 +10,21 @@ public class PositionManager {
 	private float[] mDrawPts = new float[32];
 	private int mBoardWidth = 0;
 	private int mBoardHeight = 0;
-	private final int mTouchTolerance = DensityAdaptor.getDensityIndependentValue(48);
-	private final int mItemWidth = DensityAdaptor.getDensityIndependentValue(48);
+	private final int mTouchTolerance = DensityAdaptor
+			.getDensityIndependentValue(48);
+	private final int mItemWidth = DensityAdaptor
+			.getDensityIndependentValue(48);
 	private static PositionManager instance = null;
-	
-	public static PositionManager getInstance()
-	{
-		if(null == instance)
-		{
+
+	public static PositionManager getInstance() {
+		if (null == instance) {
 			instance = new PositionManager();
 		}
 		return instance;
 	}
-	
-	public void initialize(float margin, float cellLength, int boardWidth, int boardHeight)
-	{
+
+	public void initialize(float margin, float cellLength, int boardWidth,
+			int boardHeight) {
 		float pt11x = margin;
 		float pt11y = margin;
 		float pt12x = pt11x + cellLength;
@@ -120,45 +120,38 @@ public class PositionManager {
 		mPositions[13] = new PointF(pt42x, pt42y);
 		mPositions[14] = new PointF(pt43x, pt43y);
 		mPositions[15] = new PointF(pt44x, pt44y);
-		
+
 		mBoardWidth = boardWidth;
 		mBoardHeight = boardHeight;
 	}
-	
-	public PositionManager()
-	{
+
+	public PositionManager() {
 	}
-	
-	public PointF getLocation(int r, int c)
-	{
+
+	public PointF getLocation(int r, int c) {
 		int index = r * 4 + c;
-		if(index >= 16)
-		{
+		if (index >= 16) {
 			return null;
 		}
 		return mPositions[index];
 	}
-	
-	public PointF getLocation(int index)
-	{
+
+	public PointF getLocation(int index) {
 		return mPositions[index];
 	}
-	
-	public int getProperRowColIndex(float x, float y)
-	{
-		for(int i = 0; i < 16; ++i)
-		{
+
+	public int getProperRowColIndex(float x, float y) {
+		for (int i = 0; i < 16; ++i) {
 			PointF pos = mPositions[i];
 			float xtemp = (pos.x - x) * (pos.x - x);
 			float ytemp = (pos.y - y) * (pos.y - y);
-			if(FloatMath.sqrt(xtemp + ytemp) < mTouchTolerance)
-			{
+			if (FloatMath.sqrt(xtemp + ytemp) < mTouchTolerance) {
 				return i;
 			}
 		}
 		return -1;
 	}
-	
+
 	public void positionItem(View item, int r, int c) {
 		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
 				RelativeLayout.LayoutParams.WRAP_CONTENT,

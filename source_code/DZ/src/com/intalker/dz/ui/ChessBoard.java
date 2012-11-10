@@ -44,12 +44,13 @@ public class ChessBoard extends RelativeLayout {
 		mForegroundPaint.setStyle(Paint.Style.STROKE);
 		mForegroundPaint.setStrokeWidth(2.0f);
 
-		PositionManager.getInstance().initialize(margin, cellLength, mBoardWidth, mBoardHeight);
+		PositionManager.getInstance().initialize(margin, cellLength,
+				mBoardWidth, mBoardHeight);
 	}
 
 	private void initializeUI() {
 		this.setBackgroundResource(R.drawable.grid_bg);
-		
+
 		ChessManager chessMgr = ChessManager.getInstance();
 		chessMgr.clearAList();
 		chessMgr.clearBList();
@@ -69,30 +70,33 @@ public class ChessBoard extends RelativeLayout {
 			btn.setPos(3, i);
 			chessMgr.addToBList(btn);
 		}
-		
-		this.setOnTouchListener(new OnTouchListener(){
+
+		this.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if(event.getAction() == MotionEvent.ACTION_DOWN)
-				{
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					ChessManager chessMgr = ChessManager.getInstance();
 					PositionManager posMgr = PositionManager.getInstance();
-					int ix = posMgr.getProperRowColIndex(event.getX(), event.getY());
+					int ix = posMgr.getProperRowColIndex(event.getX(),
+							event.getY());
 					Chess lastChess = chessMgr.getLastSelectedChess();
-					if(null != lastChess)
-					{
-						if (ix >= 0)
-						{
-							if(!chessMgr.isOccupiedBy(ix) && chessMgr.canMoveTo(lastChess, ix))
-							{
+					if (null != lastChess) {
+						if (ix >= 0) {
+							if (!chessMgr.isOccupiedBy(ix)
+									&& chessMgr.canMoveTo(lastChess, ix)) {
 								lastChess.setIndex(ix);
 								chessMgr.clearLastSelected();
-								//chessMgr.setNewlyMovedChess(lastChess);
-								boolean result = chessMgr.checkStatus(lastChess);
-								if(result)
-								{
-									Toast.makeText(v.getContext(), "Kill", Toast.LENGTH_SHORT).show();
+								// chessMgr.setNewlyMovedChess(lastChess);
+								ArrayList<Chess> killedEnemies = chessMgr
+										.getNewlyKilledEnemies(lastChess);
+								// if(killedEnemies)
+								// {
+								// Toast.makeText(v.getContext(), "Kill",
+								// Toast.LENGTH_SHORT).show();
+								// }
+								for (Chess enemy : killedEnemies) {
+									chessMgr.removeItem(enemy);
 								}
 							}
 						}
@@ -100,7 +104,7 @@ public class ChessBoard extends RelativeLayout {
 				}
 				return false;
 			}
-			
+
 		});
 	}
 
