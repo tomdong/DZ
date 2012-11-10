@@ -120,17 +120,17 @@ public class ChessManager {
 	
 	public boolean checkStatus(Chess newlyMovedChess)
 	{
-		return checkRow(newlyMovedChess);
+		return checkRow(newlyMovedChess) || checkCol(newlyMovedChess);
 	}
 	
 	private boolean checkRow(Chess chess)
 	{
 		ArrayList<Chess> comradesInSameRow = new ArrayList<Chess>();
-		int r = chess.getRow();
+		int row = chess.getRow();
 		ArrayList<Chess> comrades = getComrades(chess);
 		for (Chess c : comrades)
 		{
-			if(c.getRow() == r && !c.equals(chess))
+			if(c.getRow() == row && !c.equals(chess))
 			{
 				comradesInSameRow.add(c);
 			}
@@ -149,7 +149,7 @@ public class ChessManager {
 			return false;
 		}
 		
-		int rowStartIndex = r * 4;
+		int rowStartIndex = row * 4;
 		//TODO: should be optimized
 		if(isOccupiedBy(rowStartIndex)
 				&& isOccupiedBy(rowStartIndex + 1)
@@ -210,6 +210,103 @@ public class ChessManager {
 			break;
 		case 3:
 			if(isOccupiedBy(enimies, rowStartIndex + 1))
+			{
+				return true;
+			}
+			break;
+		default:
+			break;
+		}
+		return false;
+	}
+	
+	private boolean checkCol(Chess chess)
+	{
+		ArrayList<Chess> comradesInSameCol = new ArrayList<Chess>();
+		int col = chess.getCol();
+		ArrayList<Chess> comrades = getComrades(chess);
+		for (Chess c : comrades)
+		{
+			if(c.getCol() == col && !c.equals(chess))
+			{
+				comradesInSameCol.add(c);
+			}
+		}
+		//TODO: contains itself, should be optimized
+		if(comradesInSameCol.size() != 1)
+		{
+			return false;
+		}
+		ArrayList<Chess> enimies = getEnemies(chess);
+		Chess comrade = comradesInSameCol.get(0);
+		int r1 = chess.getRow();
+		int r2 = comrade.getRow();
+		if(Math.abs(r1 - r2) != 1)
+		{
+			return false;
+		}
+		
+		int colStartIndex = col;
+		//TODO: should be optimized
+		if(isOccupiedBy(colStartIndex)
+				&& isOccupiedBy(colStartIndex + 4)
+				&& isOccupiedBy(colStartIndex + 8)
+				&& isOccupiedBy(colStartIndex + 12))
+		{
+			return false;
+		}
+		//TODO: end
+		
+		switch(r1)
+		{
+		case 0:
+			if(isOccupiedBy(enimies, colStartIndex + 8))
+			{
+				return true;
+			}
+			break;
+		case 1:
+			if(0 == r2)
+			{
+				if(isOccupiedBy(enimies, colStartIndex + 8))
+				{
+					return true;
+				}
+			}
+			else if(2 == r2)
+			{
+				if(isOccupiedBy(enimies, colStartIndex))
+				{
+					return true;
+				}
+				else if(isOccupiedBy(enimies, colStartIndex + 12))
+				{
+					return true;
+				}
+			}
+			break;
+		case 2:
+			if(3 == r2)
+			{
+				if(isOccupiedBy(enimies, colStartIndex + 4))
+				{
+					return true;
+				}
+			}
+			if(1 == r2)
+			{
+				if(isOccupiedBy(enimies, colStartIndex))
+				{
+					return true;
+				}
+				else if(isOccupiedBy(enimies, colStartIndex + 12))
+				{
+					return true;
+				}
+			}
+			break;
+		case 3:
+			if(isOccupiedBy(enimies, colStartIndex + 4))
 			{
 				return true;
 			}
