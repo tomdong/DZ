@@ -130,13 +130,13 @@ public class ChessManager {
 		ArrayList<Chess> comrades = getComrades(chess);
 		for (Chess c : comrades)
 		{
-			if(c.getRow() == r)
+			if(c.getRow() == r && !c.equals(chess))
 			{
 				comradesInSameRow.add(c);
 			}
 		}
 		//TODO: contains itself, should be optimized
-		if(comradesInSameRow.size() != 2)
+		if(comradesInSameRow.size() != 1)
 		{
 			return false;
 		}
