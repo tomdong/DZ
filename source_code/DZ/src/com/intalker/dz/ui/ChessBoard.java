@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.intalker.dz.R;
 import com.intalker.dz.utilities.ChessManager;
 import com.intalker.dz.utilities.PositionManager;
+import com.intalker.dz.utilities.RecordManager;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -14,7 +15,6 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 public class ChessBoard extends RelativeLayout {
 
@@ -30,6 +30,7 @@ public class ChessBoard extends RelativeLayout {
 		mBoardHeight = h;
 		initializeParams();
 		initializeUI();
+		RecordManager.getInstance().setCurPlayer(Chess.Role_A);
 	}
 
 	private void initializeParams() {
@@ -83,9 +84,9 @@ public class ChessBoard extends RelativeLayout {
 					Chess lastChess = chessMgr.getLastSelectedChess();
 					if (null != lastChess) {
 						if (ix >= 0) {
-							if (!chessMgr.isOccupiedBy(ix)
-									&& chessMgr.canMoveTo(lastChess, ix)) {
+							if (chessMgr.canMoveTo(lastChess, ix)) {
 								lastChess.setIndex(ix);
+								RecordManager.getInstance().finishMove(lastChess);
 								chessMgr.clearLastSelected();
 								// chessMgr.setNewlyMovedChess(lastChess);
 								ArrayList<Chess> killedEnemies = chessMgr

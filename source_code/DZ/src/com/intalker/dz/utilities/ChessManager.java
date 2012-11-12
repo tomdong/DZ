@@ -2,6 +2,7 @@ package com.intalker.dz.utilities;
 
 import java.util.ArrayList;
 
+import com.intalker.dz.R;
 import com.intalker.dz.ui.Chess;
 
 public class ChessManager {
@@ -52,7 +53,7 @@ public class ChessManager {
 		return null;
 	}
 
-	public boolean isOccupiedBy(int index) {
+	public boolean isOccupied(int index) {
 		return isOccupiedBy(mAliveChessAList, index)
 				|| isOccupiedBy(mAliveChessBList, index);
 	}
@@ -71,8 +72,13 @@ public class ChessManager {
 	public void clearLastSelected() {
 		mLastSelectedChess = null;
 	}
+	
+	public boolean canMoveTo(Chess item, int newIndex)
+	{
+		return isClosePosition(item, newIndex) && !isOccupied(newIndex);
+	}
 
-	public boolean canMoveTo(Chess item, int newIndex) {
+	public boolean isClosePosition(Chess item, int newIndex) {
 		int newRow = newIndex / 4;
 		int newCol = newIndex % 4;
 		int oldRow = item.getRow();
@@ -124,9 +130,9 @@ public class ChessManager {
 
 		int rowStartIndex = row * 4;
 		// TODO: should be optimized
-		if (isOccupiedBy(rowStartIndex) && isOccupiedBy(rowStartIndex + 1)
-				&& isOccupiedBy(rowStartIndex + 2)
-				&& isOccupiedBy(rowStartIndex + 3)) {
+		if (isOccupied(rowStartIndex) && isOccupied(rowStartIndex + 1)
+				&& isOccupied(rowStartIndex + 2)
+				&& isOccupied(rowStartIndex + 3)) {
 			return null;
 		}
 		// TODO: end
@@ -212,9 +218,9 @@ public class ChessManager {
 
 		int colStartIndex = col;
 		// TODO: should be optimized
-		if (isOccupiedBy(colStartIndex) && isOccupiedBy(colStartIndex + 4)
-				&& isOccupiedBy(colStartIndex + 8)
-				&& isOccupiedBy(colStartIndex + 12)) {
+		if (isOccupied(colStartIndex) && isOccupied(colStartIndex + 4)
+				&& isOccupied(colStartIndex + 8)
+				&& isOccupied(colStartIndex + 12)) {
 			return null;
 		}
 		// TODO: end

@@ -11,10 +11,18 @@ import android.widget.RelativeLayout;
 
 public class DZActivity extends Activity {
 
+	private static DZActivity app = null;
+	
+	public static DZActivity getApp()
+	{
+		return app;
+	}
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeChessBoard();
+        app = this;
     }
     
     private void initializeChessBoard()

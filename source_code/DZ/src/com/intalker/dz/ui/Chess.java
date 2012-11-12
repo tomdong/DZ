@@ -1,7 +1,10 @@
 package com.intalker.dz.ui;
 
+import com.intalker.dz.R;
 import com.intalker.dz.utilities.ChessManager;
 import com.intalker.dz.utilities.PositionManager;
+import com.intalker.dz.utilities.RecordManager;
+import com.intalker.dz.utilities.TipUtil;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -84,6 +87,11 @@ public class Chess extends ImageButton {
 	}
 
 	public void select() {
+		if(!RecordManager.getInstance().isCurPlayer(this))
+		{
+			TipUtil.getInstance().showTip(R.string.wrong_player);
+			return;
+		}
 		ChessManager.getInstance().selectChess(this);
 		this.setBackgroundResource(selectedImageResId);
 	}
