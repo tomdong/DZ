@@ -2,7 +2,8 @@ package com.intalker.dz.utilities;
 
 import java.util.ArrayList;
 
-import com.intalker.dz.R;
+import android.view.ViewGroup;
+
 import com.intalker.dz.ui.Chess;
 
 public class ChessManager {
@@ -19,12 +20,29 @@ public class ChessManager {
 		return instance;
 	}
 
-	public void clearAList() {
-		mAliveChessAList.clear();
+	public ArrayList<Chess> getListA() {
+		return mAliveChessAList;
 	}
 
-	public void clearBList() {
-		mAliveChessBList.clear();
+	public ArrayList<Chess> getListB() {
+		return mAliveChessBList;
+	}
+
+	public void clearListA() {
+		clearUI(mAliveChessAList);
+		mAliveChessAList = new ArrayList<Chess>();
+	}
+
+	public void clearListB() {
+		clearUI(mAliveChessBList);
+		mAliveChessBList = new ArrayList<Chess>();
+	}
+
+	private void clearUI(ArrayList<Chess> list) {
+		for (Chess c : list) {
+			ViewGroup viewGroup = (ViewGroup) c.getParent();
+			viewGroup.removeView(c);
+		}
 	}
 
 	public void addToAList(Chess item) {
@@ -72,9 +90,8 @@ public class ChessManager {
 	public void clearLastSelected() {
 		mLastSelectedChess = null;
 	}
-	
-	public boolean canMoveTo(Chess item, int newIndex)
-	{
+
+	public boolean canMoveTo(Chess item, int newIndex) {
 		return isClosePosition(item, newIndex) && !isOccupied(newIndex);
 	}
 

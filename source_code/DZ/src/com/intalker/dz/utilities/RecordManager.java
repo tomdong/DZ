@@ -3,22 +3,20 @@ package com.intalker.dz.utilities;
 import com.intalker.dz.ui.Chess;
 
 public class RecordManager {
+	public final static String storeKeyCurPlayer = "CurPlayer";
 	private int mCurPlayer = -1;
 	private static RecordManager instance = null;
 
 	public void setCurPlayer(int playerRole) {
 		mCurPlayer = playerRole;
 	}
-	
-	public int getCurPlayer()
-	{
+
+	public int getCurPlayer() {
 		return mCurPlayer;
 	}
-	
-	public void finishMove(Chess c)
-	{
-		switch(c.getRole())
-		{
+
+	public void finishMove(Chess c) {
+		switch (c.getRole()) {
 		case Chess.Role_A:
 			mCurPlayer = Chess.Role_B;
 			break;
@@ -29,14 +27,12 @@ public class RecordManager {
 			break;
 		}
 	}
-	
-	public boolean isCurPlayer(Chess item)
-	{
-		 if(item.getRole() == mCurPlayer)
-		 {
-			 return true;
-		 }
-		 return false;
+
+	public boolean isCurPlayer(Chess item) {
+		if (item.getRole() == mCurPlayer) {
+			return true;
+		}
+		return false;
 	}
 
 	public static RecordManager getInstance() {

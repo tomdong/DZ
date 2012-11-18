@@ -1,12 +1,19 @@
 package com.intalker.dz;
 
+import java.util.ArrayList;
+
+import com.intalker.dz.ui.Chess;
 import com.intalker.dz.ui.ChessBoard;
+import com.intalker.dz.utilities.ChessManager;
 import com.intalker.dz.utilities.DensityAdaptor;
+import com.intalker.dz.utilities.RecordManager;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.view.Menu;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 public class DZActivity extends Activity {
@@ -21,11 +28,47 @@ public class DZActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,   
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        
+        if(null != savedInstanceState)
+        {
+        	ChessManager chessMgr = ChessManager.getInstance();
+        	chessMgr.clearListA();
+        	chessMgr.clearListB();
+        	
+			ArrayList<Chess> listA = savedInstanceState
+					.getParcelableArrayList(Chess.storeKeyRoleA);
+			chessMgr.getListA().addAll(listA);
+
+			ArrayList<Chess> listB = savedInstanceState
+					.getParcelableArrayList(Chess.storeKeyRoleB);
+			chessMgr.getListB().addAll(listB);
+			
+			RecordManager.getInstance().setCurPlayer(
+					savedInstanceState.getInt(RecordManager.storeKeyCurPlayer));
+        }
+
         initializeChessBoard();
         app = this;
     }
     
-    private void initializeChessBoard()
+    @Override
+	protected void onSaveInstanceState(Bundle outState) {
+    	
+		ArrayList<Chess> listA = ChessManager.getInstance().getListA();
+		ArrayList<Chess> listB = ChessManager.getInstance().getListB();
+		outState.putParcelableArrayList(Chess.storeKeyRoleA, listA);
+		outState.putParcelableArrayList(Chess.storeKeyRoleB, listB);
+		outState.putInt(RecordManager.storeKeyCurPlayer, RecordManager
+				.getInstance().getCurPlayer());
+
+		super.onSaveInstanceState(outState);
+	}
+
+	private void initializeChessBoard()
     {
     	Context context = this.getApplicationContext();
     	RelativeLayout layout = new RelativeLayout(context);

@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class ChessBoard extends RelativeLayout {
 
@@ -53,23 +54,33 @@ public class ChessBoard extends RelativeLayout {
 		this.setBackgroundResource(R.drawable.grid_bg);
 
 		ChessManager chessMgr = ChessManager.getInstance();
-		chessMgr.clearAList();
-		chessMgr.clearBList();
 
-		for (int i = 0; i < 4; ++i) {
-			Chess btn = new Chess(this.getContext(), R.drawable.chess_a_normal,
-					R.drawable.chess_a_selected, Chess.Role_A);
-			this.addView(btn);
-			btn.setPos(0, i);
-			chessMgr.addToAList(btn);
-		}
+		if (chessMgr.getListA().size() > 0 || chessMgr.getListB().size() > 0) {
+			for (Chess chess : chessMgr.getListA()) {
+				this.addView(chess);
+			}
 
-		for (int i = 0; i < 4; ++i) {
-			Chess btn = new Chess(this.getContext(), R.drawable.chess_b_normal,
-					R.drawable.chess_b_selected, Chess.Role_B);
-			this.addView(btn);
-			btn.setPos(3, i);
-			chessMgr.addToBList(btn);
+			for (Chess chess : chessMgr.getListB()) {
+				this.addView(chess);
+			}
+		} else {
+			for (int i = 0; i < 4; ++i) {
+				Chess btn = new Chess(this.getContext(),
+						R.drawable.chess_a_normal, R.drawable.chess_a_selected,
+						Chess.Role_A);
+				this.addView(btn);
+				btn.setPos(0, i);
+				chessMgr.addToAList(btn);
+			}
+
+			for (int i = 0; i < 4; ++i) {
+				Chess btn = new Chess(this.getContext(),
+						R.drawable.chess_b_normal, R.drawable.chess_b_selected,
+						Chess.Role_B);
+				this.addView(btn);
+				btn.setPos(3, i);
+				chessMgr.addToBList(btn);
+			}
 		}
 
 		this.setOnTouchListener(new OnTouchListener() {
@@ -86,16 +97,11 @@ public class ChessBoard extends RelativeLayout {
 						if (ix >= 0) {
 							if (chessMgr.canMoveTo(lastChess, ix)) {
 								lastChess.setIndex(ix);
-								RecordManager.getInstance().finishMove(lastChess);
+								RecordManager.getInstance().finishMove(
+										lastChess);
 								chessMgr.clearLastSelected();
-								// chessMgr.setNewlyMovedChess(lastChess);
 								ArrayList<Chess> killedEnemies = chessMgr
 										.getNewlyKilledEnemies(lastChess);
-								// if(killedEnemies)
-								// {
-								// Toast.makeText(v.getContext(), "Kill",
-								// Toast.LENGTH_SHORT).show();
-								// }
 								for (Chess enemy : killedEnemies) {
 									chessMgr.removeItem(enemy);
 								}
@@ -107,6 +113,15 @@ public class ChessBoard extends RelativeLayout {
 			}
 
 		});
+
+		TextView tv = new TextView(this.getContext());
+		tv.setText(R.string.wrong_player);
+		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+				RelativeLayout.LayoutParams.WRAP_CONTENT,
+				RelativeLayout.LayoutParams.WRAP_CONTENT);
+		lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		this.addView(tv, lp);
 	}
 
 	@Override
