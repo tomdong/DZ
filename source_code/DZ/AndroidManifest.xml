@@ -13,6 +13,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".DZActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_dz" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
